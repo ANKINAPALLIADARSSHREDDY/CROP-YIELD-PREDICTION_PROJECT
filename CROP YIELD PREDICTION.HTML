@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Yield Prediction</title>
+    <style>
+        /* Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgb(222, 13, 117);
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #f4e435;
+        }
+
+        p {
+            color: #fdef2f;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, select {
+            padding: 10px;
+            margin-top: 10px;
+            border: 3px solid #a112e9;
+            border-radius: 15px;
+        }
+
+        button {
+            background: #c0da14;
+            color: white;
+            border: none;
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #028a74;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #9df909;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🌾crop yield prediction </h1>
+        <p>Enter details to predict crop yield</p>
+
+        <form id="cropForm">
+            <label>📍 Location:</label>
+            <input type="text" id="location" placeholder="Enter your city or region" required>
+
+            <label>📅 Year:</label>
+            <select id="year">
+                <option value="2017">2017</option>
+                <option value="2018">2018</option>
+                <option value="2019">2019</option>
+                <option value="2020">2020</option>
+                <option value="2021">2021</option>
+                <option value="2022">2022</option>
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                
+            </select>
+
+            <label>🌿 Crop Type:</label>
+            <select id="cropType">
+                <option value="wheat">Wheat</option>
+                <option value="jowar">Jowar</option>
+                <option value="rice">Rice</option>
+                <option value="maize">Maize</option>
+                <option value="barley">Barley</option>
+                <option value="soybean">Soybean</option>
+                <option value="groundnut">Groundnut</option>
+                <option value="sugarcane">Sugarcane</option>
+                <option value="cotton">Cotton</option>
+                <option value="millet">Millet</option>
+            </select>
+
+            <label>🌱 Soil Type:</label>
+            <select id="soilType">
+                <option value="sandy">Sandy</option>
+                <option value="clay">Clay</option>
+                <option value="silt">Silt</option>
+                <option value="loam">Loam</option>
+            </select>
+
+            <label>🌡 Temperature (°C):</label>
+            <input type="number" id="temperature" placeholder="Enter temperature" required>
+
+            <label>🌧 Rainfall (mm):</label>
+            <input type="number" id="rainfall" placeholder="Enter rainfall" required>
+
+            <label>💧 Humidity (%):</label>
+            <input type="number" id="humidity" placeholder="Enter humidity" required>
+
+            <label>📊 Historical Yield (kg/ha):</label>
+            <input type="number" id="historicalYield" placeholder="Enter previous yield" required>
+
+            <button type="submit">Predict Yield</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('cropForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    let data = {
+        location: document.getElementById('location').value,
+        year: document.getElementById('year').value,
+        cropType: document.getElementById('cropType').value,
+        soilType: document.getElementById('soilType').value,
+        temperature: parseFloat(document.getElementById('temperature').value),
+        rainfall: parseFloat(document.getElementById('rainfall').value),
+        humidity: parseFloat(document.getElementById('humidity').value),
+        historicalYield: parseFloat(document.getElementById('historicalYield').value)
+    };
+
+    (fetch('http://127.0.0.1:5000/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    }))
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            document.getElementById('result').innerHTML = <span style="color: red;">Error: ${data.error}</span>;
+        } else {
+            document.getElementById('result').innerHTML = Predicted yield for ${data.cropType} in ${data.location} (${data.year}): <strong>${data.predictedYield}</strong>;
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+    </script>
+
+</body>
+</html>
